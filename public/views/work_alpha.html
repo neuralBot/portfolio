@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html ng-app="myApp">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Genesiz test</title>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head> 
+<body style="background-color: #b4bac4">
+<script>
+var name = null;
+  // This is called with the results from from FB.getLoginStatus()
+  function fb_login() {
+    FB.login(function(response) {
+     console.log(response);
+      if (response.status === 'connected') {
+        testAPI();
+      } else if (response.status === 'not_authorized') {
+        document.getElementById('greeting').innerHTML = '<a href="#" onclick="fb_login();"><img width="160" src="https://www.touchofmodern.com/img/icons/login-with-facebook.png" border="0" alt=""></a>';
+      } else {
+        document.getElementById('greeting').innerHTML = '<a href="#" onclick="fb_login();"><img width="160" src="https://www.touchofmodern.com/img/icons/login-with-facebook.png" border="0" alt=""></a>';
+      }
+   }, {scope: 'public_profile,email'});
+}
+
+  window.fbAsyncInit = function() {
+  FB.init({
+    appId      : '1115649021857269',
+    cookie     : true,  // enable cookies to allow the server to access 
+                        // the session
+    xfbml      : true,  // parse social plugins on this page
+    version    : 'v2.5' // use graph api version 2.5
+  });
+
+  };
+
+  function checkLoginState() {
+    FB.getLoginStatus(function(response) {
+      fb_login(response);
+    });
+  }
+
+  // Load the SDK asynchronously
+  (function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_US/sdk.js";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));
+
+  // Here we run a very simple test of the Graph API after login is
+  // successful.  See statusChangeCallback() for when this call is made.
+  function testAPI() {
+    console.log('Welcome!  Fetching your information.... ');
+    FB.api('/me', function(response) {
+      document.getElementById('menu').innerHTML = '<a class="dropdown-toggle" data-toggle="dropdown" href="#" id="nav_menu">Menu<span class="caret"></span></a><ul class="dropdown-menu"><li><a href="#">Page 1-1</a></li>'+
+              '<li><a href="#">Page 1-2</a></li>'+
+              '<li><a href="#">Page 1-3</a></li>'+
+            '</ul>'
+      name = response.name;
+        get_pic();
+    });
+  }
+  function fb_logout() {
+    FB.logout(function(response) {
+      document.getElementById('greeting').innerHTML = '<a href="#" onclick="fb_login();"><img width="160" src="https://www.touchofmodern.com/img/icons/login-with-facebook.png" border="0" alt=""></a>';
+      document.getElementById('status').innerHTML = '<div style="padding: 20px">LOG OUT SUCCESS</div>';
+    });
+  }
+
+  function get_pic() {
+    console.log('Welcome!  Fetching your information.... ');
+    FB.api('/me/picture', function(response) {
+      document.getElementById('greeting').innerHTML =
+        '<img src="' + response.data.url + '"><span style="color:white;padding:5px">'+name+' , <a href="#" onclick="fb_logout();">log out</a> </span>';
+    });
+  }
+</script>
+
+
+<nav class="navbar navbar-inverse" style="border-radius:0px; padding-top:10px; padding-bottom:10px;">
+    <div class="container">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="#" id="nav_brand">Genesiz</a>
+      </div>
+     
+      <ul class="nav navbar-nav navbar-right" > 
+          <li class="dropdown" id = "menu">
+         </li>
+        <li id="greeting" class="navbar-right" style="">
+        <a href="#" onclick="checkLoginState();"><img width="160" src="https://www.touchofmodern.com/img/icons/login-with-facebook.png" border="0" alt=""></a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+<div class="container" style="background-color: white;padding:20px" ng-controller="appCtrl">
+  <h2>Test MEAN Stack</h2>
+  <div id="status" ></div>
+  <div ng-bind-html="warning"></div>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Like</th>
+        <th>Description</th>
+        <th>Action</th>
+        <th>&nbsp;</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="work in workList">
+        <td>{{work.name}}</td>
+        <td>{{work.email}}</td>
+        <td>{{work.number}}</td>
+        <td><button class="btn btn-danger" ng-click="remove(work._id)">Remove</button></td>
+         <td><button class="btn btn-warning" ng-click="edit(work._id)">Edit</button></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.min.js"></script>
+</body>
+<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.0-beta.2/angular-sanitize.js"></script>
+<script src="controllers/controller.js"></script>
+</html>
